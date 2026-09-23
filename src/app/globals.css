@@ -1,0 +1,200 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens — reinterpreted from the original menu PDF:
+   dominant black, one energetic red, warm white, red dots and organic shapes.
+   Contrast notes:
+   - #e1251b on ink: for large/display text and fills (AA large).
+   - #f4483c on ink: for small red text (AA 5.5:1).
+   - white on #e1251b: buttons/active chips (AA 4.7:1).
+--------------------------------------------------------------------------- */
+@theme {
+  --color-ink: #0b0a0a;
+  --color-ink-soft: #131011;
+  --color-line: #2b2424;
+  --color-cream: #f7f3ee;
+  --color-cream-dim: #a8a09a;
+  --color-brand: #e1251b;
+  --color-brand-bright: #f4483c;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bebas), "Arial Narrow", ui-sans-serif, sans-serif;
+  --font-brush: var(--font-caveat), ui-serif, cursive;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Offset for the sticky menu chip bar so anchors do not hide under it. */
+    scroll-padding-top: 4.75rem;
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-cream);
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-brand);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-bright);
+    outline-offset: 3px;
+  }
+
+  /* Thin, on-brand scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-line);
+    border-radius: 999px;
+  }
+}
+
+/* --- Utilities ------------------------------------------------------------ */
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Edge fade for horizontally scrollable chip bars: signals there is more
+   content sideways. Applied on mobile widths only, where the bar overflows. */
+@media (max-width: 767px) {
+  .scroll-fade-x {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 1.25rem,
+      #000 calc(100% - 2.25rem),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 1.25rem,
+      #000 calc(100% - 2.25rem),
+      transparent 100%
+    );
+  }
+}
+
+/* Red dot grid, echo of the decorative dots in the PDF. */
+.pattern-dots {
+  background-image: radial-gradient(rgba(225, 37, 27, 0.26) 1.5px, transparent 1.6px);
+  background-size: 24px 24px;
+}
+
+.pattern-dots-soft {
+  background-image: radial-gradient(rgba(247, 243, 238, 0.07) 1px, transparent 1.2px);
+  background-size: 20px 20px;
+}
+
+/* Brush lettering with the white outline treatment from the PDF. */
+.brush-stroke {
+  -webkit-text-stroke-width: clamp(1px, 0.3vw, 3px);
+  -webkit-text-stroke-color: rgba(247, 243, 238, 0.8);
+  paint-order: fill stroke;
+}
+
+/* Skip link — visible only on keyboard focus. */
+.skip-link {
+  position: fixed;
+  top: -4rem;
+  left: 1rem;
+  z-index: 60;
+  border-radius: 999px;
+  background-color: var(--color-brand);
+  color: #ffffff;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus-visible {
+  top: 1rem;
+}
+
+/* --- Motion --------------------------------------------------------------- */
+/* Reveal is progressive enhancement: without JS (.js class) content is
+   visible by default, so the page never ships hidden content. */
+
+.reveal {
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.js .reveal {
+  opacity: 0;
+  transform: translateY(1.25rem);
+}
+
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hero entrance — CSS only, ends in the visible state. */
+.hero-in {
+  animation: hero-in 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.hero-in-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.hero-in-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.hero-in-delay-3 {
+  animation-delay: 0.32s;
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
