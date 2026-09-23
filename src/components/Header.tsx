@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { CloseIcon, MenuIcon } from "./icons";
 import { focusRing } from "./ui";
@@ -23,15 +24,17 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link
           href="#inicio"
-          className="group flex items-baseline gap-2"
+          className="group flex items-center"
           aria-label="El Colorado Resto Bar — inicio"
         >
-          <span className="font-brush text-2xl font-bold leading-none text-brand transition-colors group-hover:text-brand-bright">
-            El Colorado
-          </span>
-          <span className="font-display text-xs uppercase tracking-[0.22em] text-cream-dim transition-colors group-hover:text-cream">
-            Resto Bar
-          </span>
+          <Image
+            src="/elcolorado_logo.jpg"
+            alt=""
+            width={150}
+            height={150}
+            priority
+            className="h-11 w-11 rounded-sm transition-opacity group-hover:opacity-90"
+          />
         </Link>
 
         <nav aria-label="Navegación principal" className="hidden md:block">

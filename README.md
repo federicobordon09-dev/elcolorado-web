@@ -18,6 +18,7 @@ src/
     page.tsx        # Hero → Experiencia → Carta → Visitar
     globals.css     # Tokens de diseño, motion progresivo, a11y base
     fonts.ts        # next/font/google
+    icon.jpg        # Favicon oficial (convención de archivo de Next)
   components/       # Header, Hero, Experiencia, Carta, MenuNav, Visitar, Footer, ui, icons, Reveal
   lib/
     menu.ts         # Data tipada del menú (categorías / productos / variantes / opciones)
@@ -66,7 +67,9 @@ convertirse en entidades reales más adelante sin reescribir la UI:
    guardado en `pendingNotes`, no renderizado.
 4. **Cervezas — "Latas"**: figura en el PDF pero puede ser presentación y no
    producto independiente. En `pendingNotes`, no renderizado.
-5. **Logo/favicon oficiales**: se usa el del scaffold mientras tanto.
+5. **Logo/favicon oficiales**: resuelto — `public/elcolorado_logo.jpg` se usa
+   como logo del header y como favicon (`src/app/icon.jpg`); se reemplazó el
+   favicon del scaffold.
 6. **Fotos reales**: fase pendiente; la galería no existe en la UI pública hasta
    entonces (el componente se recrea cuando haya assets).
 7. **URL de Google Maps**: no hay link de mapa sin URL verificada.
