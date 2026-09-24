@@ -3,14 +3,11 @@ import "./globals.css";
 import { bebas, caveat, geist } from "./fonts";
 
 export const metadata: Metadata = {
-  title: {
-    default: "El Colorado Resto Bar — Carta y contacto",
-    template: "%s — El Colorado Resto Bar",
-  },
+  title: "El Colorado Resto Bar",
   description:
     "Carta de El Colorado Resto Bar: pizzas, sándwiches, vizcacheras, licuados, cafetería, bebidas, cervezas y tragos. Teléfono e Instagram de contacto en La Consulta, San Carlos, Mendoza.",
   openGraph: {
-    title: "El Colorado Resto Bar — Carta y contacto",
+    title: "El Colorado Resto Bar",
     description:
       "La carta completa de El Colorado Resto Bar: pizzas, sándwiches, vizcacheras, licuados, cafetería, bebidas, cervezas y tragos.",
     locale: "es_AR",
