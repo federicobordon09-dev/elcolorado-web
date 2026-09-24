@@ -203,6 +203,16 @@ export function ArrowRightIcon(props: IconProps) {
   );
 }
 
+/** Arrow up for the back-to-top control (line art, decorative). */
+export function ArrowUpIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 19V5" />
+      <path d="m6 11 6-6 6 6" />
+    </Svg>
+  );
+}
+
 export function MenuIcon(props: IconProps) {
   return (
     <Svg {...props}>

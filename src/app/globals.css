@@ -184,6 +184,41 @@
   }
 }
 
+/* Hero decorative dots: the dot sits near the edge of a full-size invisible
+   container, so rotating the container orbits it around the illustration
+   center. Transform-only — no layout thrash. Distinct durations keep the
+   four dots out of sync; negative delays start each at a different angle. */
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orbit {
+  animation: orbit 24s linear infinite;
+}
+
+.orbit-a {
+  animation-duration: 18s;
+  animation-delay: -4s;
+}
+
+.orbit-b {
+  animation-duration: 24s;
+  animation-delay: -11s;
+  animation-direction: reverse;
+}
+
+.orbit-c {
+  animation-duration: 32s;
+  animation-delay: -20s;
+}
+
+.orbit-d {
+  animation-duration: 40s;
+  animation-delay: -7s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -196,5 +231,11 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* Dots rest at their authored positions (edge of the illustration),
+     not mid-orbit on top of the pizza. */
+  .orbit {
+    animation-name: none;
   }
 }

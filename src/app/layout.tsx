@@ -38,6 +38,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             __html: `document.documentElement.classList.add("js")`,
           }}
         />
+        {/* Reload/navigate start at the top with a clean URL: take over scroll
+            restoration and strip any leftover hash before paint. Back/forward
+            keeps the browser's native restoration untouched. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=performance.getEntriesByType("navigation")[0]?.type;if(t!=="back_forward"){history.scrollRestoration="manual";if(location.hash){history.replaceState(null,"",location.pathname+location.search);}window.scrollTo({top:0,behavior:"instant"});}}catch(e){}`,
+          }}
+        />
       </head>
       <body className="flex min-h-full flex-col font-sans">
         <a href="#main" className="skip-link">

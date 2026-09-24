@@ -53,10 +53,22 @@ export function Hero() {
             <div className="absolute inset-1 rounded-full border border-cream/20" />
             <div className="absolute inset-5 rotate-6 rounded-[64%_36%_48%_52%/40%_62%_38%_60%] bg-brand" />
             <PizzaSliceArt className="absolute inset-0 m-auto h-[56%] w-[56%] -rotate-6 text-ink" />
-            <span className="absolute left-0 top-12 h-3.5 w-3.5 rounded-full bg-brand" />
-            <span className="absolute right-8 top-5 h-3 w-3 rounded-full bg-cream" />
-            <span className="absolute bottom-6 left-12 h-2.5 w-2.5 rounded-full bg-cream/70" />
-            <span className="absolute bottom-10 right-4 h-5 w-5 rounded-full bg-brand-bright" />
+            {/* Decorative dots: each sits near the edge of a full-size invisible
+                orbit container; only the container rotates (transform-only), so
+                the dot travels a circular path around the illustration center.
+                The pizza slice and red blob above stay static. */}
+            <div className="orbit orbit-a pointer-events-none absolute inset-0">
+              <span className="absolute left-0 top-12 h-3.5 w-3.5 rounded-full bg-brand" />
+            </div>
+            <div className="orbit orbit-b pointer-events-none absolute inset-0">
+              <span className="absolute right-8 top-5 h-3 w-3 rounded-full bg-cream" />
+            </div>
+            <div className="orbit orbit-c pointer-events-none absolute inset-0">
+              <span className="absolute bottom-6 left-12 h-2.5 w-2.5 rounded-full bg-cream/70" />
+            </div>
+            <div className="orbit orbit-d pointer-events-none absolute inset-0">
+              <span className="absolute bottom-10 right-4 h-5 w-5 rounded-full bg-brand-bright" />
+            </div>
           </div>
         </div>
       </div>
