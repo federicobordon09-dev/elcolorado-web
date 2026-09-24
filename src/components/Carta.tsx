@@ -1,8 +1,5 @@
-import {
-  menuCategories,
-  type MenuCategory,
-  type MenuProduct,
-} from "@/lib/menu";
+import type { MenuCategory, MenuProduct } from "@/lib/catalog";
+import { ProductAddControl } from "./cart/ProductAddControl";
 import { MenuNav } from "./MenuNav";
 import { Reveal } from "./Reveal";
 import { BrushSwash } from "./ui";
@@ -49,9 +46,11 @@ function getTreatment(category: MenuCategory): Treatment {
 function ProductRow({
   product,
   treatment,
+  optionGroups,
 }: {
   product: MenuProduct;
   treatment: Treatment;
+  optionGroups?: MenuCategory["options"];
 }) {
   const hasPresentations =
     product.presentations !== undefined && product.presentations.length > 0;
@@ -63,19 +62,27 @@ function ProductRow({
           aria-hidden="true"
           className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-brand transition-transform duration-200 group-hover:scale-150"
         />
-        <span
-          className={`font-medium leading-snug text-cream ${
-            treatment === "featured" ? "text-base" : "text-[15px]"
-          }`}
-        >
-          {product.name}
-        </span>
+        <div className="min-w-0 flex-1">
+          <span
+            className={`font-medium leading-snug text-cream ${
+              treatment === "featured" ? "text-base" : "text-[15px]"
+            }`}
+          >
+            {product.name}
+          </span>
+          {hasPresentations && (
+            <p className="mt-1 text-sm leading-snug text-cream-dim">
+              Presentaciones: {product.presentations!.join(" · ")}
+            </p>
+          )}
+          <ProductAddControl
+            productId={product.id}
+            productName={product.name}
+            presentations={product.presentations}
+            optionGroups={optionGroups}
+          />
+        </div>
       </div>
-      {hasPresentations && (
-        <p className="mt-1 pl-[1.375rem] text-sm leading-snug text-cream-dim">
-          Presentaciones: {product.presentations!.join(" · ")}
-        </p>
-      )}
     </li>
   );
 }
@@ -151,6 +158,7 @@ function CategorySection({
               key={product.id}
               product={product}
               treatment={treatment}
+              optionGroups={category.options}
             />
           ))}
         </ul>
@@ -174,9 +182,13 @@ function PizzaWatermark() {
 /**
  * The menu section itself. Structured content (never text in images),
  * no prices, subtle hierarchy between categories.
+ *
+ * Catalog is loaded once in the page (server) and passed in — same data
+ * feeds the carta UI and the cart's catalog index. This component stays a
+ * pure presentational server subtree.
  */
-export function Carta() {
-  const navCategories = menuCategories.map(({ id, label }) => ({ id, label }));
+export function Carta({ catalog }: { catalog: readonly MenuCategory[] }) {
+  const navCategories = catalog.map(({ id, label }) => ({ id, label }));
 
   return (
     <section
@@ -204,7 +216,7 @@ export function Carta() {
       </div>
 
       <div className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
-        {menuCategories.map((category, index) => (
+        {catalog.map((category, index) => (
           <CategorySection
             key={category.id}
             category={category}

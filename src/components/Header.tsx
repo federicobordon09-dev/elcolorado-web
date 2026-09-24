@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { CartButton } from "./cart/CartButton";
 import { CloseIcon, MenuIcon } from "./icons";
 import { focusRing } from "./ui";
 
@@ -60,16 +61,23 @@ export function Header() {
           </ul>
         </nav>
 
-        <button
-          type="button"
-          className={`rounded-md p-2 text-cream transition-colors hover:text-brand-bright md:hidden ${focusRing}`}
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-          aria-label={open ? "Cerrar menú" : "Abrir menú"}
-          onClick={() => setOpen((value) => !value)}
-        >
-          {open ? <CloseIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <CartButton />
+          <button
+            type="button"
+            className={`rounded-md p-2 text-cream transition-colors hover:text-brand-bright md:hidden ${focusRing}`}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            aria-label={open ? "Cerrar menú" : "Abrir menú"}
+            onClick={() => setOpen((value) => !value)}
+          >
+            {open ? (
+              <CloseIcon className="h-6 w-6" />
+            ) : (
+              <MenuIcon className="h-6 w-6" />
+            )}
+          </button>
+        </div>
       </div>
 
       {open && (

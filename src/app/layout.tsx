@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { bebas, caveat, geist } from "./fonts";
+import { CartProvider } from "@/components/cart/CartProvider";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://elcolorado.vercel.app"),
@@ -65,10 +66,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="flex min-h-full flex-col font-sans">
-        <a href="#main" className="skip-link">
-          Saltar al contenido
-        </a>
-        {children}
+        <CartProvider>
+          <a href="#main" className="skip-link">
+            Saltar al contenido
+          </a>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );

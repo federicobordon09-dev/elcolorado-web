@@ -1,6 +1,13 @@
 /**
  * Menu content transcribed from the official 2-page PDF menu of El Colorado Resto Bar.
  *
+ * ROLE (Phase 2): SEED / TRANSCRIPTION SOURCE ONLY.
+ * The live catalog is read from Supabase by `src/lib/catalog.ts`
+ * (`getMenuCatalog()`); the render path must NOT import `menuCategories`
+ * as a runtime value here. This file stays the source of truth for the
+ * initial seed migration and for the shared TypeScript types re-exported
+ * by `catalog.ts`.
+ *
  * Content rules (mandatory):
  * - Product names follow the PDF. Presentation-level orthography errors are
  *   corrected (e.g. "jamon" -> "jamón"), but commercial names are kept as-is
