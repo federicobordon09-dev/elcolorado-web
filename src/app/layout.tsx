@@ -3,6 +3,7 @@ import "./globals.css";
 import { bebas, caveat, geist } from "./fonts";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://elcolorado.vercel.app"),
   title: "El Colorado Resto Bar",
   description:
     "Carta de El Colorado Resto Bar: pizzas, sándwiches, vizcacheras, licuados, cafetería, bebidas, cervezas y tragos. Teléfono e Instagram de contacto en La Consulta, San Carlos, Mendoza.",
@@ -12,6 +13,25 @@ export const metadata: Metadata = {
       "La carta completa de El Colorado Resto Bar: pizzas, sándwiches, vizcacheras, licuados, cafetería, bebidas, cervezas y tragos.",
     locale: "es_AR",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "El Colorado Resto Bar",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "El Colorado Resto Bar",
+      },
+    ],
   },
 };
 
