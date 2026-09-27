@@ -3,38 +3,8 @@
 import { useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { X, MapPin, User, Package, Clock } from "lucide-react";
-
-interface AdminOrderDetail {
-  id: string;
-  order_number: number;
-  status: "pending" | "preparing" | "ready" | "delivered" | "cancelled";
-  mode: "dine_in" | "takeaway";
-  customer_name: string;
-  customer_phone: string | null;
-  table_label: string | null;
-  total_cents: number | null;
-  created_at: string;
-  updated_at: string;
-  items: {
-    id: string;
-    product_name_snapshot: string;
-    presentation: string | null;
-    selected_option: string | null;
-    quantity: number;
-    unit_price_cents: number | null;
-    note: string | null;
-    created_at: string;
-  }[];
-}
-
-interface AdminOrderDetailProps {
-  order: AdminOrderDetail | null;
-  isOpen: boolean;
-  onClose: () => void;
-  onStatusChange: (orderId: string, newStatus: "preparing" | "ready") => void;
-  isUpdating?: boolean;
-}
+import { X, MapPin, User, Package, Clock, Phone, Truck } from "lucide-react";
+import type { AdminOrderDetail } from "@/lib/actions/admin";
 
 const STATUS_LABELS: Record<AdminOrderDetail["status"], string> = {
   pending: "Pendiente",
@@ -53,8 +23,13 @@ const STATUS_COLORS: Record<AdminOrderDetail["status"], string> = {
 };
 
 const MODE_LABELS: Record<AdminOrderDetail["mode"], string> = {
-  dine_in: "En local",
-  takeaway: "Para llevar",
+  dine_in: "En el local",
+  takeaway: "Delivery",
+};
+
+const MODE_ICONS: Record<AdminOrderDetail["mode"], React.ReactNode> = {
+  dine_in: <User className="h-3.5 w-3.5" aria-hidden="true" />,
+  takeaway: <Package className="h-3.5 w-3.5" aria-hidden="true" />,
 };
 
 function formatMoney(cents: number | null): string {
@@ -70,7 +45,19 @@ function formatDateTime(dateString: string): string {
   }
 }
 
-export function AdminOrderDetailModal({ order, isOpen, onClose, onStatusChange, isUpdating }: AdminOrderDetailProps) {
+export function AdminOrderDetailModal({
+  order,
+  isOpen,
+  onClose,
+  onStatusChange,
+  isUpdating,
+}: {
+  order: AdminOrderDetail | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onStatusChange: (orderId: string, newStatus: "preparing" | "ready") => void;
+  isUpdating?: boolean;
+}) {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
@@ -135,19 +122,9 @@ export function AdminOrderDetailModal({ order, isOpen, onClose, onStatusChange, 
                 {STATUS_LABELS[order.status]}
               </span>
               <span className="inline-flex items-center gap-1 rounded-full bg-ink/40 px-2 py-0.5 text-xs" aria-label={MODE_LABELS[order.mode]}>
-                {order.mode === "dine_in" ? (
-                  <User className="h-3.5 w-3.5" aria-hidden="true" />
-                ) : (
-                  <Package className="h-3.5 w-3.5" aria-hidden="true" />
-                )}
+                {MODE_ICONS[order.mode]}
                 {MODE_LABELS[order.mode]}
               </span>
-              {order.table_label && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-ink/40 px-2 py-0.5 text-xs text-cream-dim" aria-label={`Mesa: ${order.table_label}`}>
-                  <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
-                  Mesa: {order.table_label}
-                </span>
-              )}
             </div>
           </div>
           <button
@@ -171,9 +148,32 @@ export function AdminOrderDetailModal({ order, isOpen, onClose, onStatusChange, 
                 <dd className="text-cream font-medium">{order.customer_name}</dd>
               </div>
               <div>
-                <dt className="text-cream-dim">Teléfono</dt>
+                <dt className="text-cream-dim flex items-center gap-1">
+                  <Phone className="h-3.5 w-3.5" aria-hidden="true" />
+                  Teléfono
+                </dt>
                 <dd className="text-cream">{order.customer_phone ?? "—"}</dd>
               </div>
+              {order.mode === "takeaway" && (
+                <>
+                  <div className="sm:col-span-2">
+                    <dt className="text-cream-dim flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
+                      Dirección de entrega
+                    </dt>
+                    <dd className="text-cream font-medium">{order.delivery_address ?? "—"}</dd>
+                  </div>
+                  {order.delivery_reference && (
+                    <div className="sm:col-span-2">
+                      <dt className="text-cream-dim flex items-center gap-1">
+                        <Truck className="h-3.5 w-3.5" aria-hidden="true" />
+                        Referencia de entrega
+                      </dt>
+                      <dd className="text-cream">{order.delivery_reference}</dd>
+                    </div>
+                  )}
+                </>
+              )}
               <div>
                 <dt className="text-cream-dim">Creado</dt>
                 <dd className="text-cream">

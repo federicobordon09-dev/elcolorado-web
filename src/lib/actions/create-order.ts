@@ -33,6 +33,8 @@ type RpcCreateOrderArgs = {
   p_customer_phone: string | null;
   p_mode: "dine_in" | "takeaway";
   p_table_label: string | null;
+  p_delivery_address: string | null;
+  p_delivery_reference: string | null;
   p_lines: RpcLine[];
 };
 
@@ -47,7 +49,7 @@ function toRpcLines(input: CheckoutInput): RpcLine[] {
     presentation: l.presentation ?? null,
     selectedOption: l.selectedOption ?? null,
     quantity: l.quantity,
-    note: l.note === "" ? null : l.note,
+    note: null,
   }));
 }
 
@@ -64,11 +66,30 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
 
   const supabase = await createServerSupabaseClient();
 
+  // Normalize and prepare RPC arguments
+  const customerPhone = parsed.customerPhone?.trim() === "" ? null : parsed.customerPhone?.trim() ?? null;
+  
+  let deliveryAddress: string | null = null;
+  let deliveryReference: string | null = null;
+
+  if (parsed.mode === "takeaway") {
+    deliveryAddress = parsed.deliveryAddress?.trim() ?? null;
+    deliveryReference = parsed.deliveryReference?.trim() === "" ? null : parsed.deliveryReference?.trim() ?? null;
+  } else {
+    // dine_in: delivery fields must be null
+    deliveryAddress = null;
+    deliveryReference = null;
+  }
+
+  const tableLabel = parsed.tableLabel?.trim() === "" ? null : parsed.tableLabel?.trim() ?? null;
+
   const rpcArgs: RpcCreateOrderArgs = {
-    p_customer_name: parsed.customerName,
-    p_customer_phone: parsed.customerPhone ?? null,
+    p_customer_name: parsed.customerName.trim(),
+    p_customer_phone: customerPhone,
     p_mode: parsed.mode,
-    p_table_label: parsed.tableLabel ?? null,
+    p_table_label: tableLabel,
+    p_delivery_address: deliveryAddress,
+    p_delivery_reference: deliveryReference,
     p_lines: toRpcLines(parsed),
   };
 

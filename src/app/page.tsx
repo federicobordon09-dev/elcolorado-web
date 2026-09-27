@@ -7,9 +7,14 @@ import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { Visitar } from "@/components/Visitar";
 import { CatalogProvider } from "@/components/cart/CatalogProvider";
+import { CatalogRealtimeSync } from "@/components/cart/CatalogRealtimeSync";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { CartBar } from "@/components/cart/CartBar";
+import { CartBarSpacer } from "@/components/cart/CartBarSpacer";
 import { buildCatalogIndex, toCatalogIndexDTO } from "@/lib/catalog-index";
 import { getMenuCatalog } from "@/lib/catalog";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const catalog = await getMenuCatalog();
@@ -17,6 +22,7 @@ export default async function Home() {
 
   return (
     <CatalogProvider dto={catalogDto}>
+      <CatalogRealtimeSync />
       <Header />
       {/* tabIndex -1: skip-link target for programmatic keyboard focus. */}
       <main id="main" tabIndex={-1} className="flex-1">
@@ -26,10 +32,13 @@ export default async function Home() {
         <Visitar />
       </main>
       <Footer />
+      {/* Spacer to prevent CartBar from overlapping Footer/content when visible */}
+      <CartBarSpacer />
       {/* Out-of-flow / null renderers: no impact on the body flex layout. */}
       <AnchorNav />
       <BackToTop />
       <CartDrawer />
+      <CartBar />
     </CatalogProvider>
   );
 }

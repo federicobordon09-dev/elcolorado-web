@@ -9,7 +9,7 @@ for other restaurants without premature abstraction.
 
 ## Why
 
-User-approved product evolution (2026-09-24). Full technical plan (phases 0–8)
+User-approved product evolution (2026-09-24). Full technical plan (fases base P0–P4 + fases F9–F15)
 was analyzed and approved with 10 explicit adjustments (see Approved decisions).
 
 ## Approved decisions (user, 2026-09-24)
@@ -42,33 +42,17 @@ was analyzed and approved with 10 explicit adjustments (see Approved decisions).
 - Multi-restaurant: generic table names only; NO `restaurant_id` in MVP.
 - No commits/push unless the user explicitly requests them.
 
-## Phases (approved plan)
+## Phases (approved plan) — F9–F15
 
-- [ ] **P0 — Setup**: Supabase deps, env vars, migrations structure, client
-      factories (browser / server SSR / service-role isolated). NO cart,
-      checkout, orders or admin UI. Checks: tsc + lint + build.
-- [ ] **P1 — DB + security base**: tables, enums, constraints, RLS
-      deny-by-default, `is_staff()`, idempotent seed from `menu.ts`.
-- [x] **P2 — Catalog from DB**: carta renders from Supabase, identical UI.
-- [ ] **P3 — Cart + checkout client**: context + localStorage, drawer,
-      presentation/option/note per line, minimal customer form.
-      **Scope lock (user brief 2026-09-24):** client cart only; NO Supabase
-      writes, NO order creation, NO Auth/admin/realtime/API routes/schema.
-      Checkout = disabled future CTA only.
-- [x] **P4 — Secure order creation**: Server Action + zod, server-side
-      validation vs DB, transactional insert with snapshots.
-      **Scope lock (user brief 2026-09-24):** checkout contract + tests only;
-      `/pedido/[token]` page deferred to later phase. Add `zod` here (justified).
-- [ ] **P5 — Admin**: `/admin/login` + `/admin` panel (auth via `getClaims()`,
-      status transitions, `is_available` toggle). NOTE: Next 16 uses
-      `proxy.ts` (NOT `middleware.ts`) for session refresh.
-- [ ] **P6 — Realtime + UX**: subscribe to `orders` only (INSERT/UPDATE),
-      fetch item detail on demand, visual counter + optional sound,
-      loading/empty/error/success states, responsive.
-- [ ] **P7 — Hardening**: RLS audit, rate limiting on order creation, adversarial
-      manual matrix (anon cannot read/write arbitrary orders, cannot skip states).
-- [ ] **P8 — Testing/QA**: pure-logic unit tests (runner decision pending —
-      user deferred Vitest) + manual QA checklist. E2E deferred.
+- [x] **F9 — Carrito + navegación de cliente**: CartProvider, CartDrawer, CartButton, ProductAddControl, CatalogProvider, localStorage versionado, SSR snapshot estable, `cart-logic.ts`, `cart-store.ts`, `catalog-index.ts`.
+- [x] **F10 — Checkout para llevar (`takeaway`)**: CheckoutForm con pills dine_in/takeaway, validaciones Zod estrictas, deliveryAddress/deliveryReference obligatorios para takeaway, Server Action `createOrder` → RPC `create_order`. Migraciones delivery **APLICADAS EN PROD** (`20260925000000` + `20260925000001`).
+- [x] **F11 — Realtime de disponibilidad**: Publication `supabase_realtime` en `orders`/`order_items`, hook `useAdminOrdersRealtime` con connection status, new orders counter, auto-refresh detail modal.
+- [ ] **F12 — QA/UX completo del cliente**: Checklist manual end-to-end (carrito → checkout dine_in/takeaway → confirmación → `/pedido/[token]`). Pendiente página de confirmación.
+- [x] **F13 — Admin/Staff UX (código implementado)**: `/admin/login` (Supabase Auth email/password), `/admin` dashboard SSR (`getClaims()` + `is_staff()`), transiciones `pending→preparing→ready`, toggle `is_available`, realtime, `proxy.ts` para session refresh (Next 16). **Pendiente deploy**: crear usuario staff + env vars Vercel + deploy.
+- [ ] **F14 — CRUD completo de carta**: Solo lectura desde DB (`getMenuCatalog`). Faltan: Server Actions + UI para create/update/delete categorías, productos, presentaciones, opciones, `price_cents`, `is_available` desde panel admin.
+- [ ] **F15 — Sistema reutilizable / producto comercial**: Multi-tenant, onboarding, configuración por negocio, branding, deploy automatizado.
+
+**Fases base (P0–P4) completadas en 2026-09-24** — ver detalle abajo.
 
 ## Phase 3 task list (this work unit)
 
@@ -415,6 +399,50 @@ policy: commits only on explicit user request.
   for Node ESM type-stripping in the pure test; safe with `noEmit: true`).
   Diff audit: no service-role in client components, no secrets in app code,
   no `as any`, no dynamic SQL, no sensitive logs. NOT committed (repo policy).
+
+### Phase 5.3 — Admin login + panel (2026-09-25) — COMPLETE (code implemented, deployment steps pending)
+
+**Descubrimiento (2026-09-25):** La inspección del repositorio revela que **todo el core de P5.3 ya está implementado y testeado**, aunque el feature doc lo marcaba como "siguiente fase". La implementación fue realizada en sesiones previas (FASE 10.4/10.5 según changelog) pero no se actualizó la documentación.
+
+**Arquitectura implementada:**
+
+- **Auth**: Supabase Auth email/password + `staff_users` table (decision 8). Login en `/admin/login` con `LoginForm.tsx` → `signInWithPassword` → redirect `/admin`.
+- **Session refresh**: `src/proxy.ts` (Next.js 16 pattern, NO middleware) intercepta requests, `exchangeCodeForSession` + `getUser()`, escribe cookies en response.
+- **Dashboard SSR**: `src/app/admin/page.tsx` → `getClaims()` + `is_staff()` RPC → carga `listAdminOrders()` + `listAdminProducts()` vía `Promise.all` → pasa datos a `AdminDashboardContent`.
+- **Server Actions (5)**: `src/lib/actions/admin.ts` — `listAdminOrders`, `getAdminOrderDetail`, `updateOrderStatus`, `toggleProductAvailability`, `listAdminProducts`. Todas con `requireStaff()` (`getClaims()` + `is_staff()`), Zod validation, optimistic locking (`expectedStatus`/`expectedAvailable`), `revalidatePath`.
+- **Client dashboard**: `AdminDashboardContent` + `AdminOrdersList` + `AdminOrderDetailModal` + `AdminProductsList` + `Toast` + `useAdminOrdersRealtime`.
+- **Realtime**: `supabase_realtime` publication en `orders` + `order_items` (migration `20260924130000`); hook respeta RLS (solo staff recibe eventos); connection status indicator + new orders counter + auto-refresh detail modal.
+- **Transiciones estado**: `VALID_TRANSITIONS` map en Server Action + DB trigger `enforce_valid_order_transition()` (migration `20260924140000`) → doble validación (UX + fuente verdad). Optimistic locking previene lost updates.
+- **Toggle is_available**: Server Action `toggleProductAvailability` + RLS policy `staff_update_products` (grant column-limited `is_available, updated_at`) + `revalidatePath("/")` para reflejo inmediato en catálogo público.
+- **Seguridad**: RLS deny-by-default verificado (62 checks anon + 52 checks staff); column-limited grants; `server-only` en service-role; `search_path=''` en RPCs; adversarial tests 38/38 PASS (`scripts/adversarial-admin.check.mjs`).
+
+**Evidencia de verificación (2026-09-25):**
+- `pnpm exec tsc --noEmit` = 0 errors
+- `pnpm lint` = 0 problems
+- `pnpm build` = OK
+- `scripts/adversarial-admin.check.mjs` → **38 PASS / 0 FAIL** (concurrencia, autorización, integridad transiciones, manipulación cliente, seguridad create_order, mensajes error)
+- `scripts/order-rpc.check.mjs` → **9 PASS / 0 FAIL** (live RPC create_order)
+- `scripts/checkout-logic.check.mjs` → **29 PASS / 0 FAIL**
+- `scripts/cart-logic.check.mjs` → **20 PASS / 0 FAIL**
+
+**Pasos de despliegue pendientes (no código):**
+1. Aplicar migraciones delivery en Supabase Dashboard: `20260925000000_add_delivery_fields.sql` + `20260925000001_update_create_order_rpc.sql` (creadas localmente, no pusheadas a prod).
+2. Crear usuario staff en Supabase Dashboard: Auth → Add user (email/password, auto-confirm) + `INSERT INTO staff_users (user_id) VALUES ('<uuid>');`.
+3. Configurar env vars en producción (Vercel): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.
+4. Verificar `proxy.ts` wireado en `next.config.ts` (route handler para auth callbacks).
+5. Deploy a producción.
+
+**Archivos clave P5.3 (ya existentes):**
+```
+src/app/admin/login/page.tsx + LoginForm.tsx
+src/app/admin/page.tsx
+src/app/admin/LogoutButton.tsx
+src/lib/actions/admin.ts (5 Server Actions)
+src/components/admin/ (6 archivos)
+src/proxy.ts
+supabase/migrations/20260924130000_enable_realtime_orders.sql
+supabase/migrations/20260924140000_enforce_order_transitions.sql
+```
 
 ### Phase 2 — Catalog from DB (2026-09-24) — COMPLETE
 

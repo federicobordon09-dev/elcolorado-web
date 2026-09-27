@@ -9,6 +9,8 @@ import type { MenuCategory, MenuOption, MenuProduct } from "@/lib/catalog";
 export type CatalogProductMeta = {
   id: string;
   name: string;
+  /** Category ID for determining product behavior (e.g., notes, etc.). */
+  categoryId: string;
   /** Presentations when the product has them (required before add). */
   presentations: readonly string[];
   /** Option groups that apply to this product (category-scoped in seed). */
@@ -31,6 +33,7 @@ export function buildCatalogIndex(
       products.set(product.id, {
         id: product.id,
         name: product.name,
+        categoryId: category.id,
         presentations: product.presentations ?? [],
         optionGroups,
       });

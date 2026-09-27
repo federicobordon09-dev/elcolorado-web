@@ -56,6 +56,12 @@ const toastStore = {
     this.toasts = [];
     this.notify();
   },
+
+  // Dismiss all loading toasts (used when operation completes with success/error)
+  dismissLoading() {
+    this.toasts = this.toasts.filter((t) => t.type !== "loading");
+    this.notify();
+  },
 };
 
 export function useToast() {
@@ -67,17 +73,22 @@ export function useToast() {
 
   const dismiss = useCallback((id: string) => toastStore.dismiss(id), []);
   const dismissAll = useCallback(() => toastStore.dismissAll(), []);
+  const dismissLoading = useCallback(() => toastStore.dismissLoading(), []);
 
-  const success = useCallback((message: string, dismissible = true) =>
-    toastStore.add({ type: "success", message, dismissible }), []);
-  const error = useCallback((message: string, dismissible = true) =>
-    toastStore.add({ type: "error", message, dismissible }), []);
+  const success = useCallback((message: string, dismissible = true) => {
+    toastStore.dismissLoading();
+    toastStore.add({ type: "success", message, dismissible });
+  }, []);
+  const error = useCallback((message: string, dismissible = true) => {
+    toastStore.dismissLoading();
+    toastStore.add({ type: "error", message, dismissible });
+  }, []);
   const info = useCallback((message: string, dismissible = true) =>
     toastStore.add({ type: "info", message, dismissible }), []);
   const loading = useCallback((message: string) =>
     toastStore.add({ type: "loading", message, dismissible: false }), []);
 
-  return { toasts, dismiss, dismissAll, success, error, info, loading };
+  return { toasts, dismiss, dismissAll, dismissLoading, success, error, info, loading };
 }
 
 const ICONS: Record<ToastType, React.ReactNode> = {

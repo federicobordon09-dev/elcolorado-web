@@ -48,11 +48,13 @@ async function cleanup(data) {
   if (error) console.error("  cleanup warn:", error.message);
 }
 
-// 1) Happy path — takeaway
+// 1) Happy path — takeaway (delivery)
 {
   const payload = {
     p_customer_name: NAME,
-    p_customer_phone: null,
+    p_customer_phone: "1160000000",
+    p_delivery_address: "Calle 123, Ciudad",
+    p_delivery_reference: "Entre calles X e Y",
     p_mode: "takeaway",
     p_table_label: null,
     p_lines: [
@@ -61,10 +63,10 @@ async function cleanup(data) {
   };
   const res = await rpcOk(payload);
   if (res.ok && res.data && typeof res.data[0].order_number === "number") {
-    ok("happy takeaway");
+    ok("happy takeaway (delivery)");
     await cleanup(res.data[0].order_number);
   } else {
-    bad("happy takeaway", res.error ?? res.data);
+    bad("happy takeaway (delivery)", res.error ?? res.data);
   }
 }
 
@@ -72,7 +74,9 @@ async function cleanup(data) {
 {
   const payload = {
     p_customer_name: NAME,
-    p_customer_phone: null,
+    p_customer_phone: "1160000000",
+    p_delivery_address: "Calle 123, Ciudad",
+    p_delivery_reference: null,
     p_mode: "takeaway",
     p_table_label: null,
     p_lines: [{ productId: "no-such-product", presentation: null, selectedOption: null, quantity: 1, note: "" }],
@@ -82,11 +86,13 @@ async function cleanup(data) {
   else bad("unknown product rejected", res.data);
 }
 
-// 3) All-fields happy path — dine_in with table
+// 3) All-fields happy path — dine_in (en el local)
 {
   const payload = {
     p_customer_name: NAME,
     p_customer_phone: "11 5555-4444",
+    p_delivery_address: null,
+    p_delivery_reference: null,
     p_mode: "dine_in",
     p_table_label: "12",
     p_lines: [
@@ -96,10 +102,10 @@ async function cleanup(data) {
   };
   const res = await rpcOk(payload);
   if (res.ok && res.data && typeof res.data[0].order_number === "number") {
-    ok("happy dine_in full fields");
+    ok("happy dine_in (en el local)");
     await cleanup(res.data[0].order_number);
   } else {
-    bad("happy dine_in full fields", res.error ?? res.data);
+    bad("happy dine_in (en el local)", res.error ?? res.data);
   }
 }
 
@@ -107,7 +113,9 @@ async function cleanup(data) {
 {
   const payload = {
     p_customer_name: NAME,
-    p_customer_phone: null,
+    p_customer_phone: "1160000000",
+    p_delivery_address: "Calle 123, Ciudad",
+    p_delivery_reference: null,
     p_mode: "takeaway",
     p_table_label: null,
     p_lines: [{ productId: "bebida-gaseosas", presentation: "5 L", selectedOption: null, quantity: 1, note: "" }],
@@ -131,7 +139,9 @@ async function cleanup(data) {
 {
   const payload = {
     p_customer_name: NAME,
-    p_customer_phone: null,
+    p_customer_phone: "1160000000",
+    p_delivery_address: "Calle 123, Ciudad",
+    p_delivery_reference: null,
     p_mode: "takeaway",
     p_table_label: null,
     p_lines: [
@@ -161,7 +171,9 @@ async function cleanup(data) {
   }
   const payload = {
     p_customer_name: NAME,
-    p_customer_phone: null,
+    p_customer_phone: "1160000000",
+    p_delivery_address: "Calle 123, Ciudad",
+    p_delivery_reference: null,
     p_mode: "takeaway",
     p_table_label: null,
     p_lines: lines,
@@ -191,7 +203,9 @@ async function cleanup(data) {
   }
   const payload = {
     p_customer_name: NAME,
-    p_customer_phone: null,
+    p_customer_phone: "1160000000",
+    p_delivery_address: "Calle 123, Ciudad",
+    p_delivery_reference: null,
     p_mode: "takeaway",
     p_table_label: null,
     p_lines: lines,
@@ -209,7 +223,9 @@ async function cleanup(data) {
 {
   const payload = {
     p_customer_name: NAME,
-    p_customer_phone: null,
+    p_customer_phone: "1160000000",
+    p_delivery_address: "Calle 123, Ciudad",
+    p_delivery_reference: null,
     p_mode: "takeaway",
     p_table_label: null,
     p_lines: [

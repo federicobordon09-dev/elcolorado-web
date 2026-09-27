@@ -3,7 +3,14 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { LogoutButton } from "./LogoutButton";
 import { AdminDashboardContent } from "@/components/admin/AdminDashboardContent";
 import { ToastProvider } from "@/components/admin/Toast";
-import { listAdminOrders, listAdminProducts, type AdminOrderListItem, type AdminProductListItem } from "@/lib/actions/admin";
+import {
+  listAdminOrders,
+  listAdminProducts,
+  listAdminCategories,
+  type AdminOrderListItem,
+  type AdminProductListItem,
+  type AdminCategoryListItem,
+} from "@/lib/actions/admin";
 
 export default async function AdminPage() {
   const supabase = await createServerSupabaseClient();
@@ -29,9 +36,10 @@ export default async function AdminPage() {
   }
 
   // Load data server-side for initial render (SSR)
-  const [ordersResult, productsResult] = await Promise.all([
+  const [ordersResult, productsResult, categoriesResult] = await Promise.all([
     listAdminOrders(),
     listAdminProducts(),
+    listAdminCategories(),
   ]);
 
   const initialOrders: AdminOrderListItem[] = ordersResult.ok ? ordersResult.data : [];
@@ -39,6 +47,9 @@ export default async function AdminPage() {
 
   const initialProducts: AdminProductListItem[] = productsResult.ok ? productsResult.data : [];
   const initialProductsError = productsResult.ok ? null : productsResult.message;
+
+  const initialCategories: AdminCategoryListItem[] = categoriesResult.ok ? categoriesResult.data : [];
+  const initialCategoriesError = categoriesResult.ok ? null : categoriesResult.message;
 
   return (
     <ToastProvider>
@@ -64,6 +75,8 @@ export default async function AdminPage() {
             initialOrdersError={initialOrdersError}
             initialProducts={initialProducts}
             initialProductsError={initialProductsError}
+            initialCategories={initialCategories}
+            initialCategoriesError={initialCategoriesError}
           />
         </div>
       </main>

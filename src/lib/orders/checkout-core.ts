@@ -4,8 +4,10 @@ import {
   CheckoutValidationError,
   MAX_LINE_QUANTITY,
   MIN_LINE_QUANTITY,
-  MAX_NOTE_LENGTH,
 } from "./checkout-schema.ts";
+
+// Note length constant (kept for internal validation consistency; checkout schema no longer accepts note from client)
+const MAX_NOTE_LENGTH = 280;
 
 export type CatalogProductMeta = {
   id: string;

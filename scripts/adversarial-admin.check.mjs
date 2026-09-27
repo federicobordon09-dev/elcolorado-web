@@ -470,7 +470,9 @@ async function runCreateOrderSecurityTests() {
   {
     const { error, data } = await anon.rpc("create_order", {
       p_customer_name: "TEST",
-      p_customer_phone: null,
+      p_customer_phone: "1160000000",
+      p_delivery_address: "Calle 123, Ciudad",
+      p_delivery_reference: null,
       p_mode: "takeaway",
       p_table_label: null,
       p_lines: [{ productId: "pizza-mozarella", presentation: null, selectedOption: null, quantity: 1, note: "" }],
@@ -501,7 +503,9 @@ async function runCreateOrderSecurityTests() {
   {
     const { error, data } = await anon.rpc("create_order", {
       p_customer_name: "TEST",
-      p_customer_phone: null,
+      p_customer_phone: "1160000000",
+      p_delivery_address: "Calle 123, Ciudad",
+      p_delivery_reference: null,
       p_mode: "takeaway",
       p_table_label: null,
       p_lines: [{ productId: "pizza-mozarella", presentation: null, selectedOption: null, quantity: 1, note: "" }],
@@ -530,7 +534,9 @@ async function runCreateOrderSecurityTests() {
   {
     const { error, data } = await anon.rpc("create_order", {
       p_customer_name: "TEST",
-      p_customer_phone: null,
+      p_customer_phone: "1160000000",
+      p_delivery_address: "Calle 123, Ciudad",
+      p_delivery_reference: null,
       p_mode: "takeaway",
       p_table_label: null,
       p_lines: [{ productId: "pizza-mozarella", presentation: null, selectedOption: null, quantity: 1, note: "" }],
@@ -559,7 +565,9 @@ async function runCreateOrderSecurityTests() {
   {
     const { error, data } = await anon.rpc("create_order", {
       p_customer_name: "TEST",
-      p_customer_phone: null,
+      p_customer_phone: "1160000000",
+      p_delivery_address: "Calle 123, Ciudad",
+      p_delivery_reference: null,
       p_mode: "takeaway",
       p_table_label: null,
       p_lines: [{ productId: "pizza-mozarella", presentation: null, selectedOption: null, quantity: 1, note: "" }],
@@ -588,7 +596,9 @@ async function runCreateOrderSecurityTests() {
   {
     const { error } = await anon.rpc("create_order", {
       p_customer_name: "TEST",
-      p_customer_phone: null,
+      p_customer_phone: "1160000000",
+      p_delivery_address: "Calle 123, Ciudad",
+      p_delivery_reference: null,
       p_mode: "takeaway",
       p_table_label: null,
       p_lines: [{ productId: "no-such-product", presentation: null, selectedOption: null, quantity: 1, note: "" }],
@@ -607,7 +617,9 @@ async function runCreateOrderSecurityTests() {
     
     const { error } = await anon.rpc("create_order", {
       p_customer_name: "TEST",
-      p_customer_phone: null,
+      p_customer_phone: "1160000000",
+      p_delivery_address: "Calle 123, Ciudad",
+      p_delivery_reference: null,
       p_mode: "takeaway",
       p_table_label: null,
       p_lines: [{ productId: "pizza-mozarella", presentation: null, selectedOption: null, quantity: 1, note: "" }],
@@ -627,7 +639,9 @@ async function runCreateOrderSecurityTests() {
   {
     const { error } = await anon.rpc("create_order", {
       p_customer_name: "TEST",
-      p_customer_phone: null,
+      p_customer_phone: "1160000000",
+      p_delivery_address: "Calle 123, Ciudad",
+      p_delivery_reference: null,
       p_mode: "takeaway",
       p_table_label: null,
       p_lines: [{ productId: "pizza-mozarella", presentation: null, selectedOption: null, quantity: 21, note: "" }],
@@ -643,7 +657,9 @@ async function runCreateOrderSecurityTests() {
   {
     const { error } = await anon.rpc("create_order", {
       p_customer_name: "TEST",
-      p_customer_phone: null,
+      p_customer_phone: "1160000000",
+      p_delivery_address: "Calle 123, Ciudad",
+      p_delivery_reference: null,
       p_mode: "takeaway",
       p_table_label: null,
       p_lines: [{ productId: "pizza-mozarella", presentation: null, selectedOption: null, quantity: 0, note: "" }],

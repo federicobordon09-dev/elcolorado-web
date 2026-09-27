@@ -10,7 +10,8 @@ export type CheckoutPayload = {
   customerName: string;
   customerPhone: string;
   mode: "dine_in" | "takeaway";
-  tableLabel: string;
+  deliveryAddress: string;
+  deliveryReference: string;
 };
 
 type Props = {
@@ -26,13 +27,25 @@ export function CheckoutForm({ lines, onSubmit, onSuccess, onError, disabled, su
   const nameId = useId();
   const phoneId = useId();
   const modeId = useId();
-  const tableId = useId();
+  const addressId = useId();
+  const referenceId = useId();
   const [isPending, startTransition] = useTransition();
   const [mode, setMode] = useState<"dine_in" | "takeaway">("dine_in");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
-  const [tableLabel, setTableLabel] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [deliveryReference, setDeliveryReference] = useState("");
   const pending = isPending || submitting === true;
+
+  // Reset incompatible fields when mode changes
+  const handleModeChange = (newMode: "dine_in" | "takeaway") => {
+    setMode(newMode);
+    if (newMode === "dine_in") {
+      setCustomerPhone("");
+      setDeliveryAddress("");
+      setDeliveryReference("");
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,7 +56,8 @@ export function CheckoutForm({ lines, onSubmit, onSuccess, onError, disabled, su
         customerName,
         customerPhone,
         mode,
-        tableLabel,
+        deliveryAddress,
+        deliveryReference,
       };
       const res = await onSubmit(payload);
       if (res.ok) onSuccess(res);
@@ -68,10 +82,10 @@ export function CheckoutForm({ lines, onSubmit, onSuccess, onError, disabled, su
               name="mode"
               value="dine_in"
               checked={mode === "dine_in"}
-              onChange={() => setMode("dine_in")}
+              onChange={() => handleModeChange("dine_in")}
               className="sr-only"
             />
-            En mesa
+            En el local
           </label>
           <label
             className={`cursor-pointer rounded-full border px-3 py-1 text-xs transition ${
@@ -85,10 +99,10 @@ export function CheckoutForm({ lines, onSubmit, onSuccess, onError, disabled, su
               name="mode"
               value="takeaway"
               checked={mode === "takeaway"}
-              onChange={() => setMode("takeaway")}
+              onChange={() => handleModeChange("takeaway")}
               className="sr-only"
             />
-            Para llevar
+            Delivery
           </label>
         </div>
       </fieldset>
@@ -106,34 +120,53 @@ export function CheckoutForm({ lines, onSubmit, onSuccess, onError, disabled, su
           className={`w-full rounded-lg border border-line bg-ink px-3 py-2 text-sm text-cream placeholder:text-cream-dim/60 ${focusRing}`}
         />
       </div>
-      <div>
-        <label htmlFor={phoneId} className="mb-1 block text-xs uppercase tracking-wide text-cream-dim">
-          Teléfono (opcional)
-        </label>
-        <input
-          id={phoneId}
-          value={customerPhone}
-          onChange={(e) => setCustomerPhone(e.target.value)}
-          maxLength={30}
-          placeholder="Ej.: 1160000000"
-          className={`w-full rounded-lg border border-line bg-ink px-3 py-2 text-sm text-cream placeholder:text-cream-dim/60 ${focusRing}`}
-        />
-      </div>
-      {mode === "dine_in" && (
+      {mode === "takeaway" && (
         <div>
-          <label htmlFor={tableId} className="mb-1 block text-xs uppercase tracking-wide text-cream-dim">
-            Mesa <span className="text-brand-bright">*</span>
+          <label htmlFor={phoneId} className="mb-1 block text-xs uppercase tracking-wide text-cream-dim">
+            Teléfono <span className="text-brand-bright">*</span>
           </label>
           <input
-            id={tableId}
+            id={phoneId}
             required
-            value={tableLabel}
-            onChange={(e) => setTableLabel(e.target.value)}
-            maxLength={40}
-            placeholder="Ej.: Mesa 4"
+            value={customerPhone}
+            onChange={(e) => setCustomerPhone(e.target.value)}
+            maxLength={30}
+            placeholder="Ej.: 1160000000"
             className={`w-full rounded-lg border border-line bg-ink px-3 py-2 text-sm text-cream placeholder:text-cream-dim/60 ${focusRing}`}
+            aria-required="true"
           />
         </div>
+      )}
+      {mode === "takeaway" && (
+        <>
+          <div>
+            <label htmlFor={addressId} className="mb-1 block text-xs uppercase tracking-wide text-cream-dim">
+              Dirección de entrega <span className="text-brand-bright">*</span>
+            </label>
+            <input
+              id={addressId}
+              required
+              value={deliveryAddress}
+              onChange={(e) => setDeliveryAddress(e.target.value)}
+              maxLength={200}
+              placeholder="Calle, número, barrio, ciudad"
+              className={`w-full rounded-lg border border-line bg-ink px-3 py-2 text-sm text-cream placeholder:text-cream-dim/60 ${focusRing}`}
+            />
+          </div>
+          <div>
+            <label htmlFor={referenceId} className="mb-1 block text-xs uppercase tracking-wide text-cream-dim">
+              Referencia de entrega (opcional)
+            </label>
+            <input
+              id={referenceId}
+              value={deliveryReference}
+              onChange={(e) => setDeliveryReference(e.target.value)}
+              maxLength={200}
+              placeholder="Ej.: Entre calles X e Y, portón azul"
+              className={`w-full rounded-lg border border-line bg-ink px-3 py-2 text-sm text-cream placeholder:text-cream-dim/60 ${focusRing}`}
+            />
+          </div>
+        </>
       )}
       <p className="text-xs text-cream-dim">Confirmás tu pedido: el total se confirma en barra.</p>
     </form>

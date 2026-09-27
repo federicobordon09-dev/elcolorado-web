@@ -28,12 +28,23 @@ function bad(name, e) { fail++; console.error(`FAIL ${name}:`, e); }
 
 try {
   checkoutInputSchema.parse({
-    lines: [{ productId: "pizza-mozarella", quantity: 1, note: "" }],
+    lines: [{ productId: "pizza-mozarella", quantity: 1, note: "sin cebolla" }],
     customerName: "Test",
+    customerPhone: "1160000000",
     mode: "takeaway",
+    deliveryAddress: "Calle 123, Ciudad",
   });
-  ok("schema valid takeaway");
-} catch (e) { bad("schema valid takeaway", e); }
+  ok("schema valid takeaway (delivery)");
+} catch (e) { bad("schema valid takeaway (delivery)", e); }
+
+try {
+  checkoutInputSchema.parse({
+    lines: [{ productId: "pizza-mozarella", quantity: 1 }],
+    customerName: "Test",
+    mode: "dine_in",
+  });
+  ok("schema valid dine_in (en el local)");
+} catch (e) { bad("schema valid dine_in (en el local)", e); }
 
 try {
   checkoutInputSchema.parse({ lines: [], customerName: "X", mode: "takeaway" });
@@ -114,15 +125,36 @@ try {
 } catch { ok("phone too long rejected"); }
 
 try {
-  const p = checkoutInputSchema.parse({
+  checkoutInputSchema.parse({
     lines: [{ productId: "x", quantity: 1 }],
     customerName: "X",
     customerPhone: "",
     mode: "takeaway",
+    deliveryAddress: "Calle 123",
   });
-  if (p.customerPhone === null) ok("phone empty -> null");
-  else bad("phone empty -> null", p.customerPhone);
-} catch (e) { bad("phone empty transform", e); }
+  bad("phone empty rejected for takeaway");
+} catch { ok("phone empty rejected for takeaway"); }
+
+try {
+  checkoutInputSchema.parse({
+    lines: [{ productId: "x", quantity: 1 }],
+    customerName: "X",
+    mode: "takeaway",
+    deliveryAddress: "",
+  });
+  bad("delivery address empty rejected for takeaway");
+} catch { ok("delivery address empty rejected for takeaway"); }
+
+try {
+  checkoutInputSchema.parse({
+    lines: [{ productId: "x", quantity: 1 }],
+    customerName: "X",
+    mode: "takeaway",
+    deliveryAddress: "Calle 123",
+    customerPhone: "1160000000",
+  });
+  ok("schema valid takeaway with phone and address");
+} catch (e) { bad("schema valid takeaway with phone and address", e); }
 
 try {
   checkoutInputSchema.parse({
@@ -138,15 +170,27 @@ try {
     lines: [{ productId: "x", quantity: 1 }],
     customerName: "X",
     mode: "dine_in",
+    tableLabel: "Mesa 5",
   });
-  bad("dine_in no table rejected");
-} catch { ok("dine_in no table rejected"); }
+  bad("dine_in with tableLabel rejected");
+} catch { ok("dine_in with tableLabel rejected"); }
+
+try {
+  checkoutInputSchema.parse({
+    lines: [{ productId: "x", quantity: 1 }],
+    customerName: "X",
+    customerPhone: "1160000000",
+    mode: "dine_in",
+  });
+  bad("dine_in with phone rejected");
+} catch { ok("dine_in with phone rejected"); }
 
 try {
   checkoutInputSchema.parse({
     lines: [{ productId: "x", quantity: 1 }],
     customerName: "X",
     mode: "takeaway",
+    deliveryAddress: "Calle 123",
     tableLabel: "5",
   });
   bad("takeaway with table rejected");

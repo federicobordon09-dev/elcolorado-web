@@ -61,7 +61,7 @@ export function ProductAddControl({
       <button
         type="button"
         onClick={handleAdd}
-        className={`mt-2 rounded-full border border-line px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-cream-dim transition hover:border-brand hover:text-brand-bright ${focusRing}`}
+        className={`mt-3 rounded-full border border-line px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-cream-dim transition hover:border-brand hover:text-brand-bright ${focusRing}`}
       >
         {added ? "Agregado ✓" : "Agregar"}
       </button>
@@ -69,17 +69,17 @@ export function ProductAddControl({
   }
 
   return (
-    <div className="mt-2 space-y-2">
+    <div className="mt-3 space-y-2.5">
       {hasPresentations && (
         <fieldset className="m-0 border-0 p-0">
-          <legend className="mb-1 text-xs uppercase tracking-wide text-cream-dim">
+          <legend className="mb-1.5 text-xs uppercase tracking-wide text-cream-dim">
             Presentación <span className="text-brand-bright">*</span>
           </legend>
           <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={`Presentación de ${productName}`}>
             {presentations!.map((value) => (
               <label
                 key={value}
-                className={`cursor-pointer rounded-full border px-3 py-1 text-xs transition ${
+                className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs transition ${
                   presentation === value
                     ? "border-brand bg-brand text-white"
                     : "border-line text-cream-dim hover:border-brand hover:text-cream"
@@ -102,7 +102,7 @@ export function ProductAddControl({
 
       {primaryOption && (
         <fieldset className="m-0 border-0 p-0">
-          <legend className="mb-1 text-xs uppercase tracking-wide text-cream-dim">
+          <legend className="mb-1.5 text-xs uppercase tracking-wide text-cream-dim">
             {primaryOption.label} <span className="text-brand-bright">*</span>
           </legend>
           <div
@@ -113,7 +113,7 @@ export function ProductAddControl({
             {primaryOption.values.map((value) => (
               <label
                 key={value}
-                className={`cursor-pointer rounded-full border px-3 py-1 text-xs transition ${
+                className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs transition ${
                   selectedOption === value
                     ? "border-brand bg-brand text-white"
                     : "border-line text-cream-dim hover:border-brand hover:text-cream"
@@ -134,13 +134,13 @@ export function ProductAddControl({
         </fieldset>
       )}
 
-      <div className="flex items-center gap-2">
+      <div className="mt-2 flex items-center gap-2 pt-1 border-t border-line/40">
         <button
           type="button"
           onClick={handleAdd}
           disabled={!canAdd}
           aria-disabled={!canAdd}
-          className={`rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.08em] transition ${
+          className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition ${
             canAdd
               ? "bg-brand text-white hover:bg-brand-bright"
               : "cursor-not-allowed bg-line text-cream-dim"
